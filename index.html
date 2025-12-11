@@ -3,106 +3,272 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LoveJourney – Anniversary Scrapbook Deluxe</title>
+<title>LoveJourney – Anniversary Scrapbook</title>
+
+<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<!-- Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-    font-family: "Poppins", sans-serif;
-    background: linear-gradient(135deg, #ffe6e9, #ffeef8);
-    min-height: 100vh;
-    padding-bottom: 80px;
-    overflow-x: hidden;
-    color: #333;
-}
-/* Floating Hearts */
-.heart { position: fixed; width: 12px; height: 12px; background: rgba(255, 80, 120, 0.7); transform: rotate(45deg); animation: float 6s linear infinite; border-radius: 2px; z-index: 0; }
-.heart::before, .heart::after { content: ""; position: absolute; width: 12px; height: 12px; background: inherit; border-radius: 50%; }
-.heart::before { top: -6px; left: 0; }
-.heart::after { left: -6px; top: 0; }
-@keyframes float { 0% { transform: translateY(0) rotate(45deg); opacity: 1; } 100% { transform: translateY(-120vh) rotate(45deg); opacity: 0; }}
-header { text-align: center; padding: 40px 20px; color: white; background: linear-gradient(135deg, #ff3e6c, #ff7ca3); box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 40px; z-index: 10; position: relative; }
-header h1 { font-size: 36px; font-weight: 600; letter-spacing: 2px; }
-header p { margin-top: 8px; font-size: 16px; opacity: 0.9; letter-spacing: 1px; }
-.container { max-width: 900px; margin: auto; padding: 20px; position: relative; z-index: 10; }
-.button-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 30px; }
-button { padding: 18px; font-size: 16px; cursor: pointer; border-radius: 14px; border: none; background: rgba(255,255,255,0.3); backdrop-filter: blur(10px); color: #333; font-weight: 600; transition: 0.3s ease; box-shadow: 0 4px 15px rgba(255,70,110,0.2); }
-button:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(255,70,110,0.35); background: rgba(255,255,255,0.45); }
-.panel { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 0 20px; border-radius: 12px; border-left: 6px solid #ff3e6c; margin-top: 20px; overflow: hidden; max-height: 0; opacity: 0; transition: all 0.5s ease; white-space: pre-wrap; line-height: 1.6; font-size: 15px; font-family: "Roboto Mono", monospace; }
-.panel.open { padding: 20px; max-height: 600px; opacity: 1; }
-/* Timeline */
-.timeline { margin: 40px 0; padding: 20px; background: rgba(255,255,255,0.5); border-radius: 12px; backdrop-filter: blur(8px); }
-.timeline input { width: 100%; }
-.timeline-output { margin-top: 15px; font-size: 18px; font-weight: 600; }
-/* Gallery */
-.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-.gallery img { width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-/* Chat Log */
-.chat-box { margin-top: 30px; background: rgba(255,255,255,0.6); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px); max-height: 300px; overflow-y: auto; }
-.message { margin-bottom: 15px; padding: 12px 16px; border-radius: 12px; max-width: 70%; }
-.me { background: #ff8fb8; color: white; margin-left: auto; }
-.him { background: #fff; color: #333; border: 1px solid #ddd; }
-footer { text-align: center; margin-top: 40px; color: #555; font-size: 14px; }
-.music-btn { position: fixed; bottom: 20px; right: 20px; background: #ff3e6c; color: white; border: none; padding: 15px; border-radius: 50%; cursor: pointer; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    /* ------------------- GLOBAL STYLE ------------------- */
+    * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+
+    body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #ffe6e9, #ffeef8);
+        min-height: 100vh;
+        padding-bottom: 60px;
+        overflow-x: hidden;
+        color: #333;
+    }
+
+    /* Floating hearts background */
+    .heart {
+        position: fixed;
+        width: 12px;
+        height: 12px;
+        background: rgba(255, 80, 120, 0.7);
+        transform: rotate(45deg);
+        animation: float 6s linear infinite;
+        border-radius: 2px;
+        z-index: 0;
+    }
+
+    .heart::before,
+    .heart::after {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: inherit;
+        border-radius: 50%;
+        top: -6px;
+        left: 0;
+    }
+
+    .heart::after {
+        left: -6px;
+        top: 0;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0) rotate(45deg); opacity: 1; }
+        100% { transform: translateY(-120vh) rotate(45deg); opacity: 0; }
+    }
+
+    header {
+        text-align: center;
+        padding: 40px 20px;
+        color: white;
+        background: linear-gradient(135deg, #ff3e6c, #ff7ca3);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-bottom: 40px;
+        z-index: 10;
+        position: relative;
+    }
+
+    header h1 {
+        font-size: 36px;
+        font-weight: 600;
+        letter-spacing: 2px;
+    }
+
+    header p {
+        margin-top: 8px;
+        font-size: 16px;
+        opacity: 0.9;
+        letter-spacing: 1px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
+        z-index: 10;
+        position: relative;
+    }
+
+    .button-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    button {
+        padding: 18px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 14px;
+        border: none;
+        background: rgba(255,255,255,0.3);
+        backdrop-filter: blur(10px);
+        color: #333;
+        font-weight: 600;
+        transition: 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 70, 110, 0.2);
+    }
+
+    button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(255, 70, 110, 0.35);
+        background: rgba(255,255,255,0.45);
+    }
+
+    .panel {
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(10px);
+        padding: 0 20px;
+        border-radius: 12px;
+        border-left: 6px solid #ff3e6c;
+        margin-top: 20px;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: all 0.5s ease;
+        font-family: "Roboto Mono", monospace;
+        white-space: pre-wrap;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    .panel.open {
+        padding: 20px;
+        max-height: 600px;
+        opacity: 1;
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 40px;
+        color: #555;
+        font-size: 14px;
+    }
 </style>
 </head>
 <body>
+
+<!-- floating hearts generator -->
 <script>
-for (let i = 0; i < 25; i++) { const heart = document.createElement("div"); heart.className = "heart"; heart.style.left = Math.random() * 100 + "vw"; heart.style.animationDuration = 4 + Math.random() * 4 + "s"; heart.style.opacity = Math.random(); heart.style.transform = `scale(${Math.random() * 0.8 + 0.4}) rotate(45deg)`; document.body.appendChild(heart);} 
+for (let i = 0; i < 25; i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = 4 + Math.random() * 4 + "s";
+    heart.style.opacity = Math.random();
+    heart.style.transform = `scale(${Math.random() * 0.8 + 0.4}) rotate(45deg)`;
+    document.body.appendChild(heart);
+}
 </script>
+
 <header>
-<h1>LoveJourney — Year 1</h1>
-<p>A Function-Call Scrapbook of Us ❤️</p>
+    <h1>LoveJourney — Year 1</h1>
+    <p>A Function-Call Scrapbook of Us ❤️</p>
 </header>
+
 <div class="container">
-<p style="margin-bottom: 20px; font-size: 18px;">Choose a memory function:</p>
-<div class="button-grid">
-<button onclick="togglePanel('foundation')"><i class="fa-solid fa-seedling"></i> showFoundation()</button>
-<button onclick="togglePanel('emotions')"><i class="fa-solid fa-chart-line"></i> showEmotionalGraph()</button>
-<button onclick="togglePanel('adventures')"><i class="fa-solid fa-mountain-sun"></i> showAdventures()</button>
-<button onclick="togglePanel('love')"><i class="fa-solid fa-heart"></i> showThingsILoveAboutHim()</button>
-<button onclick="togglePanel('output')"><i class="fa-solid fa-infinity"></i> showRelationshipOutput()</button>
+
+    <p style="margin-bottom: 20px; font-size: 18px;">Choose a memory function:</p>
+
+    <div class="button-grid">
+        <button onclick="togglePanel('foundation')"><i class="fa-solid fa-seedling"></i> showFoundation()</button>
+        <button onclick="togglePanel('emotions')"><i class="fa-solid fa-chart-line"></i> showEmotionalGraph()</button>
+        <button onclick="togglePanel('adventures')"><i class="fa-solid fa-mountain-sun"></i> showAdventures()</button>
+        <button onclick="togglePanel('loveAboutHim')"><i class="fa-solid fa-heart"></i> showThingsILoveAboutHim()</button>
+        <button onclick="togglePanel('output')"><i class="fa-solid fa-infinity"></i> showRelationshipOutput()</button>
+    </div>
+
+    <!-- Panels -->
+
+    <div id="foundation" class="panel">
+function showFoundation() {
+    return {
+        moveToGermany: "new beginnings, new challenges, new home",
+        buildLifeTogether: {
+            status: "in_progress",
+            feeling: "exciting + meaningful"
+        }
+    }
+}
+    </div>
+
+    <div id="emotions" class="panel">
+function showEmotionalGraph() {
+    return {
+        uglyFights: {
+            occurred: "yes (we’re human!)",
+            effect: "we learned, adapted, and grew stronger"
+        },
+        awesomeMoments: {
+            description: "so many beautiful memories",
+            effect: "deepened our love in every direction"
+        }
+    }
+}
+    </div>
+
+    <div id="adventures" class="panel">
+function showAdventures() {
+    return {
+        alpsHike: {
+            feelings: ["proud", "exhausted", "connected"]
+        },
+        dresdenBikeTrail: "peaceful, scenic, unforgettable",
+        nepalHoneymoon: {
+            trek: "Mardi Himal Base Camp",
+            feelings: ["magic", "awe", "so much love"]
+        }
+    }
+}
+    </div>
+
+    <div id="loveAboutHhim" class="panel">
+function showThingsILoveAboutHim() {
+    return {
+        foodPassion: "gorur mangsho = his ultimate comfort joy",
+        startupPassion: "I admire his brilliance and dedication",
+        cookingForMe: [
+            "my heart melts",
+            "my soul feels at home",
+            "my stomach is VERY happy"
+        ]
+    }
+}
+    </div>
+
+    <div id="output" class="panel">
+function showRelationshipOutput() {
+    return {
+        relationshipStatus: "real, imperfect, growing, beautiful",
+        connection: "stronger than ever",
+        prediction_Year2: "more adventures, more love, more us"
+    }
+}
+    </div>
+
 </div>
-<div id="foundation" class="panel">function showFoundation() { return { moveToGermany: "new beginnings, new challenges, new home", buildLifeTogether: { status: "in_progress", feeling: "exciting + meaningful" } } }
-</div>
-<div id="emotions" class="panel">function showEmotionalGraph() { return { uglyFights: { occurred: "yes (we’re human!)", effect: "we learned, adapted, and grew stronger" }, awesomeMoments: { description: "so many beautiful memories", effect: "deepened our love in every direction" } } }
-</div>
-<div id="adventures" class="panel">function showAdventures() { return { alpsHike: { feelings: ["proud", "exhausted", "connected"] }, dresdenBikeTrail: "peaceful, scenic, unforgettable", nepalHoneymoon: { trek: "Mardi Himal Base Camp", feelings: ["magic", "awe", "so much love"] } } }
-</div>
-<div id="love" class="panel">function showThingsILoveAboutHim() { return { foodPassion: "gorur mangsho = his ultimate comfort joy", startupPassion: "I admire his brilliance and dedication", cookingForMe: ["my heart melts", "my soul feels at home", "my stomach is VERY happy"] } }
-</div>
-<div id="output" class="panel">function showRelationshipOutput() { return { relationshipStatus: "real, imperfect, growing, beautiful", connection: "stronger than ever", prediction_Year2: "more adventures, more love, more us" } }
-</div>
-<div class="timeline">
-<h3>📅 Year 1 Timeline Slider</h3>
-<input type="range" min="1" max="12" value="1" oninput="updateTimeline(this.value)">
-<div class="timeline-output" id="timeline-output">Month 1 — New beginnings</div>
-</div>
-<h3>📸 Photo Gallery</h3>
-<div class="gallery">
-<img src="https://picsum.photos/300?1">
-<img src="https://picsum.photos/300?2">
-<img src="https://picsum.photos/300?3">
-<img src="https://picsum.photos/300?4">
-</div>
-<h3 style="margin-top:30px;">💬 Chat-Style Memory Log</h3>
-<div class="chat-box" id="chat-box"></div>
-<button style="margin-top:10px;" onclick="addMemory()">Add Random Memory</button>
-<h3 style="margin-top:30px;">🔮 Year 2 Prediction Generator</h3>
-<button onclick="generatePrediction()">Generate Prediction</button>
-<p id="prediction" style="margin-top:10px; font-size:18px; font-weight:600;"></p>
-</div>
-<footer>Made with love, always ❤️</footer>
-<audio id="bg-music" loop src="https://www.bensound.com/bensound-music/bensound-romantic.mp3"></audio>
-<button class="music-btn" onclick="toggleMusic()"><i class="fa-solid fa-music"></i></button>
+
+<footer>
+    Made with love, always ❤️
+</footer>
+
 <script>
-function togglePanel(id){ const p=document.getElementById(id); document.querySelectorAll('.panel').forEach(x=>{if(x!==p)x.classList.remove('open')}); p.classList.toggle('open'); }
-function updateTimeline(v){ const m=["New beginnings","Cozy routines","Exploring Germany","First big adventure","Deep talks","Bond strengthening","Summer love","Growth and healing","Travel dreams","Holiday magic","Warm winter","Year complete"]; document.getElementById('timeline-output').innerText=`Month ${v} — ${m[v-1]}`; }
-const chat=document.getElementById("chat-box"); const memories=["I love you more today than yesterday ❤️","Remember our hike? We conquered it together!","Your cooking = my happiness","That night we laughed for hours","You hugged me when I needed it most" ];
-function addMemory(){ const msg=document.createElement("div"); msg.className=Math.random()>0.5?"message me":"message him"; msg.innerText=memories[Math.floor(Math.random()*memories.length)]; chat.appendChild(msg); chat.scrollTop=chat.scrollHeight; }
-function generatePrediction(){ const p=["We’ll travel somewhere breathtaking","Your startup will grow bigger","Our love will deepen even more","We’ll start a new tradition","Another unforgettable adventure awaits"]; document.getElementById('prediction').innerText=p[Math.floor(Math.random()*p.length)]; }
-function toggleMusic(){ const m=document.getElementById("bg-music"); m.paused?m.play():m.pause(); }
+function togglePanel(id) {
+    const panel = document.getElementById(id);
+
+    document.querySelectorAll('.panel').forEach(p => {
+        if (p !== panel) p.classList.remove('open');
+    });
+
+    panel.classList.toggle('open');
+}
 </script>
+
 </body>
 </html>
