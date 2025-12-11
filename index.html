@@ -1,3 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Function-Call Scrapbook — LoveJourney</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1724; --card:#0b1220; --accent:#ff6b6b; --muted:#93a3b8; --panel:#0b1220;
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,#071022 0%, #0b1220 60%); color:#e6eef8; min-height:100vh;
+  }
+  header{padding:28px 20px; text-align:center}
+  header h1{margin:0;font-weight:800;letter-spacing:0.6px}
+  header p{margin:6px 0 0;color:var(--muted)}
+  .wrap{max-width:1100px;margin:28px auto;padding:20px;display:grid;grid-template-columns:360px 1fr;gap:20px}
+  .left{
+    background:var(--card); border-radius:12px; padding:18px; box-shadow:0 6px 30px rgba(2,6,23,0.6);
+  }
+  .btn{display:block;width:100%;padding:12px 14px;border-radius:10px;border:none;background:#071826;color:#dff0ff;font-weight:600;margin-bottom:10px;cursor:pointer;text-align:left}
+  .btn:hover{transform:translateY(-2px)}
+  .controls{display:flex;gap:8px;margin-top:12px}
+  .small{padding:8px 10px;font-size:13px}
+  .center{display:flex;gap:10px;align-items:center}
+  .right{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;padding:18px;min-height:60vh; overflow:auto;
+  }
+  .node{
+    background:var(--glass); padding:12px;border-radius:10px;margin-bottom:12px;border-left:4px solid rgba(255,255,255,0.03)
+  }
+  .node .title{font-family:Roboto Mono, monospace;font-weight:700;color:#fff;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .node .body{margin-top:10px;display:none}
+  .thumbnail{width:84px;height:56px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid rgba(255,255,255,0.04)}
+  .thumb-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .codeblock{background:#061226;padding:12px;border-radius:8px; font-family:Roboto Mono, monospace; font-size:13px;color:#d9eefc; white-space:pre-wrap; overflow:auto; max-height:320px}
+  .modal{position:fixed;inset:0;background:rgba(2,6,23,0.7);display:flex;align-items:center;justify-content:center;z-index:60; display:none}
+  .modal .imgwrap{max-width:92vw;max-height:86vh;padding:14px;background:#061826;border-radius:10px}
+  .modal img{max-width:100%;max-height:78vh;border-radius:8px;display:block}
+  .meta{color:var(--muted);font-size:13px;margin-top:8px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .search{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+  .tiny{font-size:13px;color:var(--muted)}
+  .copybtn{background:#173447;border:none;padding:8px;border-radius:8px;color:#cfeffc;cursor:pointer}
+  footer{margin:28px auto;text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>LoveJourney — Function-Call Scrapbook</h1>
+  <p class="tiny">Click a function to expand a memory — thumbnails & modal supported.</p>
+</header>
+
+<div class="wrap">
+  <div class="left">
+    <strong>Functions</strong>
+    <div style="margin-top:12px">
+      <button class="btn" onclick="showNode('foundation')">showFoundation()</button>
+      <button class="btn" onclick="showNode('emotionalGraph')">showEmotionalGraph()</button>
+      <button class="btn" onclick="showNode('adventures')">showAdventures()</button>
+      <button class="btn" onclick="showNode('thingsILoveAboutHim')">showThingsILoveAboutHim()</button>
+      <button class="btn" onclick="showNode('output')">showRelationshipOutput()</button>
+    </div>
+
+    <div style="margin-top:14px">
+      <strong>Actions</strong>
+      <div class="controls" style="margin-top:8px">
+        <button class="btn small" onclick="expandAll()">Expand All</button>
+        <button class="btn small" onclick="collapseAll()">Collapse All</button>
+      </div>
+      <div style="margin-top:8px">
+        <input id="jsonUpload" type="file" accept=".json" style="display:none" onchange="handleJsonUpload(event)">
+        <button class="btn small" onclick="document.getElementById('jsonUpload').click()">Load JSON file</button>
+        <button class="btn small" onclick="downloadJSON()">Download current JSON</button>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <strong>Quick tips</strong>
+      <p class="tiny" style="margin:6px 0 0">To add photos: upload them to your repo under an <code>images/</code> folder and use that path (e.g. <code>images/nepal.jpg</code>) in the JSON <code>photo</code> fields. See steps below.</p>
+    </div>
+  </div>
+
+  <div class="right" id="renderArea">
+    <div class="topbar" style="margin-bottom:12px">
+      <input id="filter" class="search" placeholder="Filter nodes e.g. 'nepal' or 'gorur'..." oninput="filterNodes()">
+      <div style="display:flex;gap:8px">
+        <button class="copybtn" onclick="copyJSON()">Copy JSON</button>
+        <button class="copybtn" onclick="toggleJSONView()">Toggle JSON</button>
+      </div>
+    </div>
+
+    <div id="tree"></div>
+
+    <h3 style="margin-top:18px">Raw JSON</h3>
+    <div id="jsonView" class="codeblock"></div>
+  </div>
+</div>
+
+<div class="modal" id="modal" onclick="closeModal(event)">
+  <div class="imgwrap" id="modalWrap">
+    <img id="modalImg" alt="photo">
+    <div class="meta" id="modalMeta"></div>
+  </div>
+</div>
+
+<footer>
+  Made with love ♥ — Copy this file to your repo root, add an <code>images/</code> folder with photos, and enable GitHub Pages.
+</footer>
+
+<script>
+/* ---------- default JSON data (use your corrected JSON here) ---------- */
 let scrapbook = {
   "function":"Infinity^(infinity+1)_Year1",
   "arguments":{
@@ -77,3 +194,223 @@ let scrapbook = {
     }
   }
 }
+
+
+/* ---------- render logic ---------- */
+
+const treeEl = document.getElementById('tree');
+const jsonView = document.getElementById('jsonView');
+
+function prettyJSON(obj) {
+  return JSON.stringify(obj, null, 2);
+}
+function renderJSONView() {
+  jsonView.textContent = prettyJSON(scrapbook);
+}
+renderJSONView();
+
+function clearTree() { treeEl.innerHTML = ''; }
+
+function createNode(title, value) {
+  const node = document.createElement('div');
+  node.className = 'node';
+  const titleBar = document.createElement('div');
+  titleBar.className = 'title';
+  titleBar.innerHTML = `<span>${title}</span><span class="tiny">▶</span>`;
+  node.appendChild(titleBar);
+
+  const body = document.createElement('div');
+  body.className = 'body';
+
+  // If value is object → list keys and allow nested toggles
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    Object.entries(value).forEach(([k, v]) => {
+      // show primitive fields inside
+      if ((typeof v === 'string' || typeof v === 'number') && k !== 'photo') {
+        const p = document.createElement('div');
+        p.textContent = `${k}: ${v}`;
+        p.style.marginTop = '8px';
+        p.style.color = '#cfe9ff';
+        body.appendChild(p);
+      } else if (k === 'photo') {
+        if (v && v.length) {
+          const thumbRow = document.createElement('div');
+          thumbRow.className = 'thumb-row';
+          const img = document.createElement('img');
+          img.className = 'thumbnail';
+          img.src = v;
+          img.alt = title + ' photo';
+          img.onerror = ()=>{ img.style.display='none'; };
+          img.onclick = (e)=>{ e.stopPropagation(); openModal(v, title); };
+          thumbRow.appendChild(img);
+          body.appendChild(thumbRow);
+        }
+      } else {
+        // nested node
+        const sub = createSubNode(k, v);
+        body.appendChild(sub);
+      }
+    });
+  } else if (Array.isArray(value)) {
+    const arr = document.createElement('div');
+    arr.textContent = value.join(', ');
+    body.appendChild(arr);
+  } else {
+    const p = document.createElement('div');
+    p.textContent = String(value);
+    body.appendChild(p);
+  }
+
+  node.appendChild(body);
+
+  // toggle handler
+  titleBar.addEventListener('click', ()=> {
+    const isOpen = body.style.display === 'block';
+    body.style.display = isOpen ? 'none' : 'block';
+    titleBar.querySelector('span:last-child').textContent = isOpen ? '▶' : '▼';
+  });
+
+  return node;
+}
+
+function createSubNode(key, value) {
+  const wrap = document.createElement('div');
+  wrap.style.marginTop='8px';
+  const kEl = document.createElement('div');
+  kEl.style.fontWeight='700';
+  kEl.style.fontFamily='Roboto Mono, monospace';
+  kEl.textContent = key;
+  wrap.appendChild(kEl);
+
+  // content
+  if (typeof value === 'string' || typeof value === 'number') {
+    const p = document.createElement('div'); p.textContent = value; p.style.marginTop='6px';
+    wrap.appendChild(p);
+  } else if (Array.isArray(value)) {
+    const p = document.createElement('div'); p.textContent = value.join(', '); p.style.marginTop='6px';
+    wrap.appendChild(p);
+  } else {
+    // object: show simple keys and photo
+    Object.entries(value).forEach(([kk, vv])=>{
+      if (kk === 'photo' && vv) {
+        const img = document.createElement('img');
+        img.className = 'thumbnail';
+        img.src = vv; img.alt = kk;
+        img.onerror = ()=>{ img.style.display='none' };
+        img.onclick = (e)=>{ e.stopPropagation(); openModal(vv, kk) };
+        const r = document.createElement('div'); r.style.marginTop='8px'; r.appendChild(img);
+        wrap.appendChild(r);
+      } else if (typeof vv === 'string' || typeof vv === 'number') {
+        const p = document.createElement('div'); p.textContent = `${kk}: ${vv}`; p.style.marginTop='6px';
+        wrap.appendChild(p);
+      } else if (Array.isArray(vv)) {
+        const p = document.createElement('div'); p.textContent = `${kk}: ${vv.join(', ')}`; p.style.marginTop='6px';
+        wrap.appendChild(p);
+      } else {
+        // deeper nested -> recursion (simple)
+        const sub = createSubNode(kk, vv);
+        sub.style.marginLeft='8px';
+        wrap.appendChild(sub);
+      }
+    });
+  }
+  return wrap;
+}
+
+function renderTree(data) {
+  clearTree();
+  const rootTitle = document.createElement('div');
+  rootTitle.style.marginBottom='10px';
+  rootTitle.innerHTML = `<div style="font-family:Roboto Mono;font-weight:800;font-size:16px">function ${data.function}()</div><div class="tiny" style="margin-top:6px">${Object.keys(data.arguments).length} top-level nodes</div>`;
+  treeEl.appendChild(rootTitle);
+
+  Object.entries(data.arguments).forEach(([k, v])=>{
+    const node = createNode(k, v);
+    node.id = `node-${k}`;
+    treeEl.appendChild(node);
+  });
+}
+renderTree(scrapbook);
+
+/* ---------- modal ---------- */
+const modal = document.getElementById('modal');
+const modalImg = document.getElementById('modalImg');
+const modalMeta = document.getElementById('modalMeta');
+function openModal(src, caption){
+  modalImg.src = src;
+  modalImg.onerror = ()=>{ modalImg.style.display='none'; modalMeta.textContent = 'Image not found'; }
+  modal.style.display='flex';
+  modalMeta.textContent = caption;
+}
+function closeModal(e){
+  if (e.target === modal || e.target.id === 'modalWrap') {
+    modal.style.display='none';
+    modalImg.src='';
+  }
+}
+
+/* ---------- helpers ---------- */
+function showNode(id) {
+  const el = document.getElementById('node-' + id);
+  if (!el) {
+    alert('Node not found: ' + id + '. It may be nested—use the tree to browse.');
+    return;
+  }
+  const body = el.querySelector('.body');
+  body.style.display = 'block';
+  el.querySelector('.title span:last-child').textContent = '▼';
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function expandAll() {
+  document.querySelectorAll('.node .body').forEach(b=>{ b.style.display='block'; });
+  document.querySelectorAll('.node .title span:last-child').forEach(s=> s.textContent='▼');
+}
+function collapseAll() {
+  document.querySelectorAll('.node .body').forEach(b=>{ b.style.display='none'; });
+  document.querySelectorAll('.node .title span:last-child').forEach(s=> s.textContent='▶');
+}
+function toggleJSONView(){
+  const v = jsonView.style.display;
+  jsonView.style.display = v === 'none' ? 'block' : 'none';
+}
+function copyJSON(){
+  navigator.clipboard.writeText(prettyJSON(scrapbook)).then(()=> alert('JSON copied to clipboard'));
+}
+function downloadJSON(){
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(prettyJSON(scrapbook));
+  const a = document.createElement('a'); a.href = dataStr; a.download = 'scrapbook.json'; a.click();
+}
+
+/* ---------- upload JSON file support ---------- */
+function handleJsonUpload(e){
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    try {
+      const obj = JSON.parse(evt.target.result);
+      scrapbook = obj;
+      renderJSONView();
+      renderTree(scrapbook);
+      alert('JSON loaded successfully');
+    } catch(err){
+      alert('Invalid JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(f);
+}
+
+/* ---------- filter ---------- */
+function filterNodes(){
+  const q = document.getElementById('filter').value.toLowerCase().trim();
+  document.querySelectorAll('.node').forEach(n=>{
+    const text = n.textContent.toLowerCase();
+    n.style.display = q === '' || text.includes(q) ? 'block' : 'none';
+  });
+}
+
+/* ---------- allow images referenced as relative paths (works on GitHub Pages) ---------- */
+/* Nothing special needed — just ensure your image paths in JSON point to the correct files in the repo */
+</script>
+</body>
+</html>
