@@ -69,7 +69,7 @@
 </head>
 <body>
 <header>
-  <h1>Infinityminus1 — DSGraph Tree View</h1>
+  <h1>LoveJourney — DSGraph Tree View</h1>
   <p>Click any node to expand. Click thumbnails to view full-size. Use search to filter nodes.</p>
 </header>
 
@@ -97,4 +97,281 @@
     </div>
 
     <div style="margin-top:12px"><strong>Usage tip</strong>
-      <p style="margin:6px 0;color:var(--muted);font-size:13px">Bec
+      <p style="margin:6px 0;color:var(--muted);font-size:13px">Because your images are in the repo root, use filenames like <code>jojo_nee1.jpg</code> in the JSON <code>photo</code> fields. If you later move them to <code>images/</code>, update paths accordingly.</p>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="topbar">
+      <input id="filter" class="search" placeholder="Filter nodes (e.g. nepal, gorur, alps)..." oninput="filterNodes()">
+      <button class="copybtn" onclick="copyJSON()">Copy JSON</button>
+      <button class="copybtn" onclick="toggleJSON()">Toggle JSON View</button>
+    </div>
+
+    <div id="tree" class="tree-root"></div>
+
+    <div id="jsonPanel" style="margin-top:18px; display:none">
+      <h3 style="margin:6px 0">Raw JSON</h3>
+      <div id="jsonView" class="codepanel"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal" onclick="closeModal(event)">
+  <div class="imgwrap" id="modalWrap">
+    <img id="modalImg" alt="photo">
+    <div class="meta" id="modalMeta"></div>
+  </div>
+</div>
+
+<footer>
+  Made with love ♥ — Hosted on GitHub Pages
+</footer>
+
+<script>
+/* =========================
+   Default scrapbook object
+   Edit these filenames/values if needed
+   ========================= */
+let scrapbook = {
+  "function":"Infinity^(infinity+1)_Year1",
+  "arguments":{
+    "foundation":{
+      "friendship":{"person":"classmate-friends","impact":"awesome Jojo, super-cool Jojo, amazing Jojo","photo":"jojo_nee1.jpg"},
+      "lovey_dovey":{"status":"boyfriend","impact":"Nesha fell head over heels for you","photo":"jojo_nee2.jpg"},
+      "moveToGermany":{"person":"husband","impact":"new beginnings, new challenges","photo":"jojo_nee3.jpg"},
+      "buildLifeTogether":{"status":"in_progress","feeling":"exciting + meaningful","photo":"jojo_nee4.jpg"}
+    },
+    "emotionalGraph":{
+      "uglyFights":{"occurrences":"some","effect":"made us stronger, taught us to communicate better","photo":"jojo_nee1.jpg"},
+      "awesomeMoments":{"description":"many many wonderful memories","effect":"deepened our love","photo":"jojo_nee2.jpg"}
+    },
+    "adventures":{
+      "honeymoon_Nepal":{"location":"Mardi Himal Base Camp","type":"our first himalayan trek together","feelings":["magic","machapucchuare","altitude sickness","jongi-paggaaaa"],"photo":"jojo_nee3.jpg"},
+      "hike_Alps":{"feelings":["du bist meine frau","exhausted","connected","our first snow-fight"],"photo":"jojo_nee4.jpg"},
+      "bikeTrail_Dresden":{"description":"biking with bubbuu, flower picking, bubbu ke dhakka diye fele deya","photo":"jojo_nee1.jpg"}
+    },
+    "thingsILoveAboutHim":{
+      "foodPassion":{"gorur_mangsho":"his #1 love language in food form","photo":"jojo_nee2.jpg"},
+      "startupPassion":{"ai_startup":"I admire his drive + brilliance + purpose + passion + boss-man Jojo","photo":"jojo_nee3.jpg"},
+      "cookingForMe":{"effectOnMe":["my heart melts","my soul feels at home","my stomach is HAPPY"],"photo":"jojo_nee4.jpg"}
+    },
+    "output":{"relationshipStatus":"real, imperfect, growing, beautiful","connection":"stronger than ever","prediction_Year2":"more adventures, more love, more us","photo":"jojo_nee1.jpg"}
+  }
+};
+
+/* =========================
+   Render tree
+   ========================= */
+const treeEl = document.getElementById('tree');
+const jsonView = document.getElementById('jsonView');
+const jsonPanel = document.getElementById('jsonPanel');
+
+function prettyJSON(obj){ return JSON.stringify(obj, null, 2); }
+function renderJSONView(){ jsonView.textContent = prettyJSON(scrapbook); }
+
+function clearTree(){ treeEl.innerHTML = ''; }
+
+// Create a collapsible node (recursively)
+function createTreeNode(key, value) {
+  const container = document.createElement('div');
+  container.className = 'node';
+
+  // Title bar
+  const title = document.createElement('div');
+  title.className = 'node-title';
+  const chev = document.createElement('div'); chev.className = 'chev'; chev.textContent = '▶';
+  const kEl = document.createElement('div'); kEl.className = 'node-key'; kEl.textContent = key;
+  const meta = document.createElement('div'); meta.className = 'node-meta';
+
+  // if value is object, show small summary
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const subCount = Object.keys(value).length;
+    meta.textContent = `${subCount} item${subCount>1?'s':''}`;
+  } else if (Array.isArray(value)) {
+    meta.textContent = `${value.length} item${value.length>1?'s':''}`;
+  } else {
+    meta.textContent = String(value);
+  }
+
+  title.appendChild(chev);
+  title.appendChild(kEl);
+  title.appendChild(meta);
+  container.appendChild(title);
+
+  // Body (hidden by default)
+  const body = document.createElement('div');
+  body.className = 'node-body';
+
+  // Populate body depending on type
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    Object.entries(value).forEach(([subK, subV])=>{
+      // special: photo -> thumbnail
+      if (subK === 'photo' && subV) {
+        const thumbRow = document.createElement('div'); thumbRow.className = 'thumb-row';
+        const img = document.createElement('img'); img.className = 'thumbnail'; img.src = subV; img.alt = key + ' photo';
+        img.onerror = ()=>{ img.style.display='none'; };
+        img.onclick = (e)=>{ e.stopPropagation(); openModal(subV, `${key} — ${subK}`); };
+        thumbRow.appendChild(img);
+        body.appendChild(thumbRow);
+        return;
+      }
+
+      // if primitive
+      if (typeof subV === 'string' || typeof subV === 'number') {
+        const kv = document.createElement('div'); kv.className = 'kv';
+        kv.innerHTML = `<span class="k">${subK}:</span> <span class="v">${subV}</span>`;
+        body.appendChild(kv);
+      } else if (Array.isArray(subV)) {
+        const kv = document.createElement('div'); kv.className = 'kv';
+        kv.innerHTML = `<span class="k">${subK}:</span>`;
+        const arrWrap = document.createElement('div');
+        subV.forEach(item=>{
+          const itemEl = document.createElement('div'); itemEl.className='array-item'; itemEl.textContent = `• ${item}`;
+          arrWrap.appendChild(itemEl);
+        });
+        kv.appendChild(arrWrap);
+        body.appendChild(kv);
+      } else if (typeof subV === 'object' && subV !== null) {
+        // nested object -> render nested subnode
+        const nested = createTreeNode(subK, subV);
+        nested.style.marginTop = '8px';
+        nested.style.marginLeft = '8px';
+        body.appendChild(nested);
+      }
+    });
+  } else if (Array.isArray(value)) {
+    value.forEach(item=>{
+      const itemEl = document.createElement('div'); itemEl.className='array-item'; itemEl.textContent = `• ${item}`;
+      body.appendChild(itemEl);
+    });
+  } else {
+    const p = document.createElement('div'); p.className='kv'; p.textContent = String(value);
+    body.appendChild(p);
+  }
+
+  container.appendChild(body);
+
+  // toggle behavior
+  title.addEventListener('click', ()=>{
+    const open = body.style.display === 'block';
+    body.style.display = open ? 'none' : 'block';
+    chev.textContent = open ? '▶' : '▼';
+  });
+
+  return container;
+}
+
+function renderTree() {
+  clearTree();
+  // header
+  const header = document.createElement('div');
+  header.style.marginBottom = '8px';
+  header.innerHTML = `<div style="font-family:Roboto Mono;font-weight:800;font-size:15px">function ${scrapbook.function}()</div><div style="color:var(--muted);margin-top:6px">${Object.keys(scrapbook.arguments).length} top-level nodes</div>`;
+  treeEl.appendChild(header);
+
+  Object.entries(scrapbook.arguments).forEach(([k,v])=>{
+    const node = createTreeNode(k, v);
+    node.id = 'node-' + k;
+    treeEl.appendChild(node);
+  });
+
+  renderJSONView();
+}
+renderTree();
+
+/* =========================
+   Modal for images
+   ========================= */
+const modal = document.getElementById('modal');
+const modalImg = document.getElementById('modalImg');
+const modalMeta = document.getElementById('modalMeta');
+
+function openModal(src, caption){
+  modalImg.src = src;
+  modalImg.onerror = ()=>{ modalImg.style.display='none'; modalMeta.textContent='Image not found'; }
+  modal.style.display='flex';
+  modalMeta.textContent = caption || '';
+}
+function closeModal(e){
+  // close only when clicking backdrop
+  if (e.target === modal) {
+    modal.style.display='none';
+    modalImg.src='';
+  }
+}
+
+/* =========================
+   Controls: show node, expand/collapse, copy download
+   ========================= */
+function showNode(id){
+  const el = document.getElementById('node-' + id);
+  if (!el) { alert('Node not found: ' + id); return; }
+  const body = el.querySelector('.node-body');
+  body.style.display = 'block';
+  el.querySelector('.chev').textContent = '▼';
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function expandAll(){
+  document.querySelectorAll('.node .node-body').forEach(b=> b.style.display='block');
+  document.querySelectorAll('.node .chev').forEach(c=> c.textContent='▼');
+}
+function collapseAll(){
+  document.querySelectorAll('.node .node-body').forEach(b=> b.style.display='none');
+  document.querySelectorAll('.node .chev').forEach(c=> c.textContent='▶');
+}
+function copyJSON(){
+  navigator.clipboard.writeText(prettyJSON(scrapbook)).then(()=> alert('JSON copied to clipboard'));
+}
+function downloadJSON(){
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(prettyJSON(scrapbook));
+  const a = document.createElement('a'); a.href = dataStr; a.download = 'scrapbook.json'; a.click();
+}
+
+/* =========================
+   JSON upload
+   ========================= */
+function handleJsonUpload(e){
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    try {
+      const obj = JSON.parse(evt.target.result);
+      scrapbook = obj;
+      renderTree();
+      alert('JSON loaded successfully');
+    } catch(err){
+      alert('Invalid JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(f);
+}
+
+/* =========================
+   Filter nodes
+   ========================= */
+function filterNodes(){
+  const q = document.getElementById('filter').value.toLowerCase().trim();
+  document.querySelectorAll('.node').forEach(n=>{
+    // header nodes (with id) only
+    if (!n.id) return;
+    const text = n.textContent.toLowerCase();
+    n.style.display = q === '' || text.includes(q) ? 'block' : 'none';
+  });
+}
+
+/* =========================
+   Toggle JSON view
+   ========================= */
+function toggleJSON(){
+  jsonPanel.style.display = jsonPanel.style.display === 'block' ? 'none' : 'block';
+}
+
+/* =========================
+   Utility: show JSON pretty on load
+   ========================= */
+renderJSONView();
+</script>
+</body>
+</html>
