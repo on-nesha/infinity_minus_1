@@ -1,181 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anniversary Scrapbook – Function Call Dashboard</title>
-<style>
-    body {
-        font-family: "Roboto Mono", monospace;
-        background: #f3f3f3;
-        margin: 0;
-        padding: 0;
-        color: #222;
-    }
+{
+  "function": "LoveJourney_Year1",
+  "arguments": {
+    "foundation": {
+      "moveToGermany": {
+        "person": "husband",
+        "impact": "new beginnings, new challenges"
+      },
+      "buildLifeTogether": {
+        "status": "in_progress",
+        "feeling": "exciting + meaningful"
+      }
+    },
 
-    header {
-        background: #111;
-        color: white;
-        text-align: center;
-        padding: 30px 20px;
-        font-size: 28px;
-        letter-spacing: 1px;
-    }
+    "emotionalGraph": {
+      "uglyFights": {
+        "occurrences": "some",
+        "effect": "made us stronger, taught us to communicate better"
+      },
+      "awesomeMoments": {
+        "description": "many many wonderful memories",
+        "effect": "deepened our love"
+      }
+    },
 
-    .container {
-        max-width: 900px;
-        margin: 40px auto;
-        padding: 20px;
-    }
-
-    .button-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 20px;
-    }
-
-    button {
-        padding: 18px;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 10px;
-        border: none;
-        background: #222;
-        color: white;
-        transition: 0.2s ease;
-    }
-
-    button:hover {
-        background: #444;
-        transform: translateY(-2px);
-    }
-
-    .panel {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        margin-top: 25px;
-        border-left: 6px solid #222;
-        display: none;
-        white-space: pre-wrap;
-        line-height: 1.5;
-        font-size: 15px;
-    }
-
-    footer {
-        margin-top: 40px;
-        text-align: center;
-        padding: 20px;
-        color: #666;
-    }
-</style>
-</head>
-<body>
-
-<header>
-    <strong>LoveJourney_Year1 Dashboard</strong><br>
-    // A Function-Call Scrapbook //
-</header>
-
-<div class="container">
-
-    <p>Select a function to reveal the memory:</p>
-
-    <div class="button-grid">
-        <button onclick="togglePanel('foundation')">showFoundation()</button>
-        <button onclick="togglePanel('emotions')">showEmotionalGraph()</button>
-        <button onclick="togglePanel('adventures')">showAdventures()</button>
-        <button onclick="togglePanel('loveAboutHim')">showThingsILoveAboutHim()</button>
-        <button onclick="togglePanel('output')">showRelationshipOutput()</button>
-    </div>
-
-    <!-- Panels -->
-
-    <div id="foundation" class="panel">
-function showFoundation() {
-    return {
-        moveToGermany: "new beginnings, new challenges, new home",
-        buildLifeTogether: {
-            status: "in_progress",
-            feeling: "exciting + meaningful"
-        }
-    }
-}
-    </div>
-
-    <div id="emotions" class="panel">
-function showEmotionalGraph() {
-    return {
-        uglyFights: {
-            occurred: "yes (we’re human!)",
-            effect: "we learned, adapted, and grew stronger"
-        },
-        awesomeMoments: {
-            description: "so many beautiful memories",
-            effect: "deepened our love in every direction"
-        }
-    }
-}
-    </div>
-
-    <div id="adventures" class="panel">
-function showAdventures() {
-    return {
-        alpsHike: {
-            feelings: ["proud", "exhausted", "connected"]
-        },
-        dresdenBikeTrail: "peaceful, scenic, unforgettable",
-        nepalHoneymoon: {
-            trek: "Mardi Himal Base Camp",
-            feelings: ["magic", "awe", "so much love"]
-        }
-    }
-}
-    </div>
-
-    <div id="loveAboutHim" class="panel">
-function showThingsILoveAboutHim() {
-    return {
-        foodPassion: "gorur mangsho = his ultimate comfort joy",
-        startupPassion: "I admire his brilliance and dedication",
-        cookingForMe: [
-            "my heart melts",
-            "my soul feels at home",
-            "my stomach is VERY happy"
+    "adventures": {
+      "hike_Alps": {
+        "feelings": [
+          "proud", "exhausted", "connected"
         ]
+      },
+      "bikeTrail_Dresden": {
+        "description": "beautiful, peaceful, unforgettable"
+      },
+      "honeymoon_Nepal": {
+        "location": "Mardi Himal Base Camp",
+        "type": "trek",
+        "feelings": [
+          "magic", "awe", "so much love"
+        ]
+      }
+    },
+
+    "thingsILoveAboutHim": {
+      "foodPassion": {
+        "gorur_mangsho": "his #1 love language in food form"
+      },
+      "startupPassion": {
+        "ai_startup": "I admire his drive + brilliance + purpose"
+      },
+      "cookingForMe": {
+        "effectOnMe": [
+          "my heart melts",
+          "my soul feels at home",
+          "my stomach is HAPPY"
+        ]
+      }
+    },
+
+    "output": {
+      "relationshipStatus": "real, imperfect, growing, beautiful",
+      "connection": "stronger than ever",
+      "prediction_Year2": "more adventures, more love, more us"
     }
+  }
 }
-    </div>
-
-    <div id="output" class="panel">
-function showRelationshipOutput() {
-    return {
-        relationshipStatus: "real, imperfect, growing, beautiful",
-        connection: "stronger than ever",
-        prediction_Year2: "more adventures, more love, more us"
-    }
-}
-    </div>
-
-</div>
-
-<footer>
-    Made with love ♥
-</footer>
-
-<script>
-function togglePanel(id) {
-    const panel = document.getElementById(id);
-
-    // Close others
-    document.querySelectorAll('.panel').forEach(p => {
-        if (p !== panel) p.style.display = 'none';
-    });
-
-    // Toggle selected
-    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-}
-</script>
-
-</body>
-</html>
